@@ -1,0 +1,1 @@
+export const ERROR500 = "Hable con el administrador. Ocurrió un problema con el servidor"
