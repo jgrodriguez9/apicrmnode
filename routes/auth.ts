@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { login } from '../controllers/auth';
+import { getUserLogued, login } from '../controllers/auth';
 import { validarCampos } from '../middlewares/validarCampos';
+import { verificarToken } from '../middlewares/verificarToken';
 
 const router = Router()
 
@@ -12,5 +13,6 @@ router.post('/login', [
     validarCampos
 ],
 login)
+router.get('/loguedUser', verificarToken, getUserLogued)
 
 export default router;

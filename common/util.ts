@@ -21,3 +21,8 @@ export const getToken = (user: any) => {
     })
     return token;
 }
+
+export const getDecodeToken = (token:string) =>{
+    let decoded = jwt.decode(token);
+    return decoded;
+}

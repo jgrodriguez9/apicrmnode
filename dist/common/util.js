@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getToken = exports.decrypted = exports.encrypted = exports.secret_token = void 0;
+exports.getDecodeToken = exports.getToken = exports.decrypted = exports.encrypted = exports.secret_token = void 0;
 const CryptoJS = __importStar(require("crypto-js"));
 const jwt = __importStar(require("jsonwebtoken"));
 const secret = "CRMJAVI2022/09/23";
@@ -41,4 +41,9 @@ const getToken = (user) => {
     return token;
 };
 exports.getToken = getToken;
+const getDecodeToken = (token) => {
+    let decoded = jwt.decode(token);
+    return decoded;
+};
+exports.getDecodeToken = getDecodeToken;
 //# sourceMappingURL=util.js.map

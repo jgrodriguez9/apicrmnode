@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = void 0;
+exports.getUserLogued = exports.login = void 0;
 const operators_1 = __importDefault(require("sequelize/lib/operators"));
 const util_1 = require("../common/util");
 const errors_1 = require("../constant/errors");
@@ -52,7 +52,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        console.log(error);
         return res.status(500).json({
             success: false,
             msg: errors_1.ERROR500,
@@ -61,4 +60,22 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.login = login;
+const getUserLogued = (req, res) => {
+    const { token } = req;
+    try {
+        const authData = (0, util_1.getDecodeToken)(token);
+        return res.status(200).json({
+            success: true,
+            content: authData
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: errors_1.ERROR500,
+            errors: error.errors
+        });
+    }
+};
+exports.getUserLogued = getUserLogued;
 //# sourceMappingURL=auth.js.map

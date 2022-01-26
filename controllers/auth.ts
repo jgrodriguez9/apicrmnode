@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import Op from "sequelize/lib/operators"
-import { decrypted, getToken } from "../common/util"
+import { decrypted, getDecodeToken, getToken } from "../common/util"
 import { ERROR500 } from "../constant/errors"
 import User from "../models/user"
 
@@ -41,7 +41,24 @@ export const login = async (req:Request, res:Response) =>{
         })
         
     } catch (error: any) {
-        console.log(error)
+        return res.status(500).json({
+            success: false,
+            msg: ERROR500,
+            errors: error.errors
+        })
+    }
+}
+
+export const getUserLogued = (req:any, res:Response) =>{
+    const { token } = req
+
+    try {
+        const authData = getDecodeToken(token)
+        return res.status(200).json({
+            success: true,
+            content: authData
+        })
+    } catch (error:any) {
         return res.status(500).json({
             success: false,
             msg: ERROR500,
