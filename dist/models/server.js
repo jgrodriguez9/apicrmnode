@@ -13,15 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const auth_1 = __importDefault(require("../routes/auth"));
-const user_1 = __importDefault(require("../routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = __importDefault(require("../db/connection"));
+//routes
+const auth_1 = __importDefault(require("../routes/auth"));
+const user_1 = __importDefault(require("../routes/user"));
+const roles_1 = __importDefault(require("../routes/roles"));
+const lead_1 = __importDefault(require("../routes/lead"));
 class Server {
     constructor() {
         this.apiPath = {
             auth: '/api/auth',
-            user: '/api/user'
+            user: '/api/user',
+            role: '/api/role',
+            lead: '/api/lead'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8082';
@@ -36,7 +41,20 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield connection_1.default.authenticate();
-                console.log('database online');
+                console.log('database connection success');
+                //sync
+                //await db.sync({force: true})
+                //console.log('database online sync')
+                //data default
+                //Role.bulkCreate(dataRole)
+                // User.create({
+                //     name: 'Admin',
+                //     email: 'admin@admin.com',
+                //     username: "admin",
+                //     active: true,
+                //     password: encrypted('123456')   ,
+                //     role_id: 1             
+                // })
             }
             catch (error) {
                 throw new Error(error);
@@ -54,6 +72,8 @@ class Server {
     routes() {
         this.app.use(this.apiPath.auth, auth_1.default);
         this.app.use(this.apiPath.user, user_1.default);
+        this.app.use(this.apiPath.role, roles_1.default);
+        this.app.use(this.apiPath.lead, lead_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
+const role_1 = __importDefault(require("./role"));
 const User = connection_1.default.define('User', {
     name: {
         type: sequelize_1.DataTypes.STRING
@@ -27,5 +28,6 @@ const User = connection_1.default.define('User', {
         defaultValue: false
     }
 });
+User.belongsTo(role_1.default, { foreignKey: { name: "role_id" } });
 exports.default = User;
 //# sourceMappingURL=user.js.map

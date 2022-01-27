@@ -3,11 +3,12 @@ import Op from "sequelize/lib/operators"
 import { PaginateQuery } from "../common/interfaces"
 import { encrypted } from "../common/util"
 import { ERROR500 } from "../constant/errors"
+import Role from "../models/role"
 import User from "../models/user"
 
 
 
-export const getUser = async (req:Request<{}, {}, {}, PaginateQuery>, res:Response) =>{
+export const getUserList = async (req:Request<{}, {}, {}, PaginateQuery>, res:Response) =>{
 
     //paginate
     const pageAsNumber = Number.parseInt(req.query.page)
@@ -34,6 +35,7 @@ export const getUser = async (req:Request<{}, {}, {}, PaginateQuery>, res:Respon
 
     const { count, rows } = await User.findAndCountAll({
         attributes: ['id','name', 'username', 'email', 'active', 'createdAt'],
+        include: Role,
         where: {
             [Op.or]: {
                 username:{
@@ -50,6 +52,38 @@ export const getUser = async (req:Request<{}, {}, {}, PaginateQuery>, res:Respon
     });
 
     return res.json({ content: rows, total_pages: Math.ceil(count / size) })
+}
+
+export const getUser = async (req:Request, res:Response) => {
+    const { id } = req.params;
+
+    try {
+
+        //checamos si existe el usuario
+        const user = await User.findByPk(id, {
+            include:Role
+        });
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                msg: "No se encuentra el usuario con id "+id
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            msg: 'success',
+            content: user
+        })
+        
+    } catch (error: any) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            msg: ERROR500,
+            errors: error.errors
+        })
+    }
 }
 
 export const postUser = async (req:Request, res:Response) =>{

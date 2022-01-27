@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.putUser = exports.postUser = exports.getUser = void 0;
+exports.deleteUser = exports.putUser = exports.postUser = exports.getUser = exports.getUserList = void 0;
 const operators_1 = __importDefault(require("sequelize/lib/operators"));
 const util_1 = require("../common/util");
 const errors_1 = require("../constant/errors");
+const role_1 = __importDefault(require("../models/role"));
 const user_1 = __importDefault(require("../models/user"));
-const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //paginate
     const pageAsNumber = Number.parseInt(req.query.page);
     const sizeAsNumber = Number.parseInt(req.query.size);
@@ -37,6 +38,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const { count, rows } = yield user_1.default.findAndCountAll({
         attributes: ['id', 'name', 'username', 'email', 'active', 'createdAt'],
+        include: role_1.default,
         where: {
             [operators_1.default.or]: {
                 username: {
@@ -52,6 +54,35 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         limit: size
     });
     return res.json({ content: rows, total_pages: Math.ceil(count / size) });
+});
+exports.getUserList = getUserList;
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        //checamos si existe el usuario
+        const user = yield user_1.default.findByPk(id, {
+            include: role_1.default
+        });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                msg: "No se encuentra el usuario con id " + id
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            msg: 'success',
+            content: user
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: errors_1.ERROR500,
+            errors: error.errors
+        });
+    }
 });
 exports.getUser = getUser;
 const postUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
